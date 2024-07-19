@@ -1,0 +1,50 @@
+<!-- //    var masterPlaylistPath = '/outputs/981cf166-c1bf-40cb-ba6b-8cae0da26ee5/master.m3u8'; // Update this to your actual path -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HLS Streaming with Video.js and Quality Selection</title>
+  <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet" />
+  <script src="https://vjs.zencdn.net/7.10.2/video.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@2.0.9/dist/videojs-contrib-quality-levels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-http-streaming@latest/dist/videojs-http-streaming.min.js"></script>
+</head>
+<body>
+
+  <h1>HLS Streaming with Quality Selection</h1>
+  <video id="video" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264"></video>
+  <select id="qualitySelect"></select>
+
+  <script>
+    var player = videojs('video', {
+      techOrder: ['html5']
+    });
+
+    player.src({
+      src: '/path/to/your/master.m3u8', //find it in output folder
+      type: 'application/x-mpegURL'
+    });
+
+    player.qualityLevels();
+
+    player.on('loadedmetadata', function() {
+      var qualityLevels = player.qualityLevels();
+      var qualitySelect = document.getElementById('qualitySelect');
+
+      for (var i = 0; i < qualityLevels.length; i++) {
+        var option = document.createElement('option');
+        option.value = i;
+        option.text = qualityLevels[i].height + 'p';
+        qualitySelect.appendChild(option);
+      }
+
+      qualitySelect.addEventListener('change', function() {
+        var selectedLevel = parseInt(qualitySelect.value, 10);
+        for (var i = 0; i < qualityLevels.length; i++) {
+          qualityLevels[i].enabled = (i === selectedLevel);
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
